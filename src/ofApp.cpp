@@ -12,6 +12,9 @@ void ofApp::setup(){
     
     receiver.setup(PORT);
     vector<string> splited = ofSplitString(localhost, ".");
+    if(splited[0] == "169" && splited[1] == "254"){
+        splited[2] = "255";
+    }
     splited[3] = "255";
     broadcast = ofJoinString(splited, ".");
     sender.setup(broadcast, PORT);
@@ -43,9 +46,9 @@ void ofApp::update(){
                 if(ip   == s.getIp())   sameIp   = true;
                 if(port == s.getPort()) samePort = true;
                 
-                if(sameIp and samePort) already = true;
+                if(sameIp && samePort) already = true;
             }
-            bool isMyself = (ip == localhost) and (port == PORT);
+            bool isMyself = (ip == localhost) && (port == PORT);
             if(!already && !isMyself){
                 if(connected >= laterSender.size()) return;
                 laterSender[connected].setIp(ip);
