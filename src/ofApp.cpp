@@ -60,7 +60,7 @@ void ofApp::update(){
         }else if(m.getAddress() == "/oscShare/pull"){
             sendMyData();
         }else{
-            //senderMe.sendMessage(m);
+            senderMe.sendMessage(m);
             for(int i=0; i<connected; i++)
                 laterSender[i].sendMessage(m);
             
@@ -101,7 +101,7 @@ void ofApp::sendMyData(){
     ofxOscMessage m;
     m.setAddress("/oscShare/push");
     m.addStringArg(localhost);
-    m.addIntArg(3000);
+    m.addIntArg(3001);
     sender.sendMessage(m);
     
 }
