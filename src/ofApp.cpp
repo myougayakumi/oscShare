@@ -8,7 +8,7 @@ string localhost = LocalAddressGrabber::getIpAddress("en0");
 
 //--------------------------------------------------------------
 void ofApp::setup(){
-    ofSetFrameRate(60);
+    ofSetFrameRate(30);
     
     receiver.setup(PORT);
     vector<string> splited = ofSplitString(localhost, ".");
@@ -22,7 +22,8 @@ void ofApp::setup(){
     senderMe.setup("localhost", 3001);
     
     laterSender.resize(10);
-    
+    LocalAddressGrabber::availableList(lists);
+
 }
 
 //--------------------------------------------------------------
@@ -59,7 +60,7 @@ void ofApp::update(){
         }else if(m.getAddress() == "/oscShare/pull"){
             sendMyData();
         }else{
-            senderMe.sendMessage(m);
+            //senderMe.sendMessage(m);
             for(int i=0; i<connected; i++)
                 laterSender[i].sendMessage(m);
             
@@ -94,6 +95,7 @@ void ofApp::update(){
 			msg_strings[current_msg_string] = "";
         }
 	}
+    
 }
 void ofApp::sendMyData(){
     ofxOscMessage m;
@@ -132,6 +134,13 @@ void ofApp::draw(){
 			msg_strings[i] = "";
 		ofDrawBitmapStringHighlight(msg_strings[i], 350, 40 + 15 * i);
 	}
+    
+    int y = 200;
+    ofDrawBitmapStringHighlight(ofToString(lists.size()),100,30);
+    ofLog() << lists.size() << lists[0];
+    for(auto i : lists){
+        ofDrawBitmapStringHighlight(i, 60,y+=20);
+    }
 }
 
 //--------------------------------------------------------------

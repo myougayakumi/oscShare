@@ -35,6 +35,7 @@ class ofApp : public ofBaseApp{
     
     string broadcast;
     int connected = 0;
+    vector<string> lists;
     
     //view
 	int current_msg_string;
