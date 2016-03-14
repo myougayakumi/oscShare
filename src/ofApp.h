@@ -3,6 +3,8 @@
 #include "ofMain.h"
 #include "ofxOsc.h"
 #include "later.h"
+#include "WinLocalAddressGrabber.h"
+
 #define NUM_MSG_STRINGS  20
 
 class ofApp : public ofBaseApp{
@@ -41,4 +43,6 @@ class ofApp : public ofBaseApp{
 	int current_msg_string;
 	string msg_strings[NUM_MSG_STRINGS];
 	float timers[NUM_MSG_STRINGS];
+
+	WinLocalAddressGrabber wlag;
 };

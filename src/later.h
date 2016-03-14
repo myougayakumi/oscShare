@@ -1,4 +1,5 @@
 #pragma once
+#include <ciso646>
 #include "ofMain.h"
 #include "ofxOsc.h"
 

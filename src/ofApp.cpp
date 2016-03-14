@@ -1,7 +1,9 @@
+#include <ciso646>
 #include "ofApp.h"
-#include "LocalAddressGrabber.h"
+#include "WinLocalAddressGrabber.h"
 
-string localhost = LocalAddressGrabber::getIpAddress("en0");
+WinLocalAddressGrabber wlag;
+string localhost = wlag.getIpAddress();
 
 #define PORT 3000
 
@@ -24,8 +26,6 @@ void ofApp::setup(){
     senderMe.setup("localhost", 3001);
     senderLocal.setup("localhost", 3010);
     laterSender.resize(10);
-    LocalAddressGrabber::availableList(lists);
-
 }
 
 //--------------------------------------------------------------
@@ -146,7 +146,7 @@ void ofApp::draw(){
     
     int y = 200;
     ofDrawBitmapStringHighlight(ofToString(lists.size()),100,30);
-    ofLog() << lists.size() << lists[0];
+    // ofLog() << lists.size() << lists[0];
     for(auto i : lists){
         ofDrawBitmapStringHighlight(i, 60,y+=20);
     }
