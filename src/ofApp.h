@@ -3,7 +3,7 @@
 #include "ofMain.h"
 #include "ofxOsc.h"
 #include "later.h"
-#define NUM_MSG_STRINGS  20
+#include "Logger.h"
 
 class ofApp : public ofBaseApp{
 
@@ -24,21 +24,21 @@ class ofApp : public ofBaseApp{
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
     
-    ofxOscReceiver      receiver, receiverHub;
-    ofxOscSender        sender;
-    ofxOscSender        senderMe, senderLocal;
-    ofxOscSender        senderTest;
-    vector<LaterSender> laterSender;
+    vector<ofxOscReceiver>  receiver;
+    vector<ofxOscSender>    sender, testSender;
+    ofxOscSender senderBroad;
+    
     
     void sendMyData();
     void sendRequest();
+    
+    vector<LaterSender> laterSender;
     
     string broadcast;
     int connected = 0;
     vector<string> lists;
     
-    //view
-	int current_msg_string;
-	string msg_strings[NUM_MSG_STRINGS];
-	float timers[NUM_MSG_STRINGS];
+    vector<Logger> loggers;
+    int logNum=0;
+    
 };

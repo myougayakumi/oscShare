@@ -3,96 +3,68 @@
 
 string localhost = LocalAddressGrabber::getIpAddress("en0");
 
-#define PORT 3000
-
-
+vector<int> portList = {3000, 3100, 3200, 3300, 3400};
+//3000 using broadcast
 //--------------------------------------------------------------
 void ofApp::setup(){
     ofSetFrameRate(60);
     
-    receiver.setup(PORT);
-    receiverHub.setup(PORT + 1);
+    receiver.resize(portList.size());
+    //sender.resize(portList.size());
+    testSender.resize(portList.size());
+    loggers.resize(portList.size());
     
+    for(int i=0; i<portList.size(); i++){
+        receiver[i].setup(portList[i]);
+        //sender[i].setup("localhost", portList[i]+1);
+        testSender[i].setup("localhost", portList[i]);
+    }
+    
+    //get broadcast
     vector<string> splited = ofSplitString(localhost, ".");
     if(splited[0] == "169" && splited[1] == "254"){
         splited[2] = "255";
     }
     splited[3] = "255";
     broadcast = ofJoinString(splited, ".");
-    sender.setup(broadcast, PORT);
-    senderTest.setup("localhost", 3000);
-    senderMe.setup("localhost", 3001);
-    senderLocal.setup("localhost", 3010);
+    senderBroad.setup(broadcast, 3000);
+    
+    //latersender
     laterSender.resize(10);
-    LocalAddressGrabber::availableList(lists);
-
+    for(int i=0; i<laterSender.size(); i++) {
+        for(int j=0; j<portList.size(); j++) {
+            laterSender[i].addPort(portList[j]+1);
+        }
+    }
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
-    while(receiverHub.hasWaitingMessages()){
+    //    while(receiverHub.hasWaitingMessages()){
+    //        ofxOscMessage m;
+    //        receiverHub.getNextMessage(m);
+    //        senderLocal.sendMessage(m);
+    //        
+    //
+    //    }
+    while(receiver[0].hasWaitingMessages()){
         ofxOscMessage m;
-        receiverHub.getNextMessage(m);
-        senderLocal.sendMessage(m);
+        receiver[0].getNextMessage(m);
+        loggers[0].setLog(m);
         
-        // unrecognized message: display on the bottom of the screen
-        string msg_string;
-        msg_string = m.getAddress();
-        msg_string += ": ";
-        for(int i = 0; i < m.getNumArgs(); i++){
-            // get the argument type
-            msg_string += m.getArgTypeName(i);
-            msg_string += ":";
-            // display the argument - make sure we get the right type
-            if(m.getArgType(i) == OFXOSC_TYPE_INT32){
-                msg_string += ofToString(m.getArgAsInt32(i));
-            }
-            else if(m.getArgType(i) == OFXOSC_TYPE_FLOAT){
-                msg_string += ofToString(m.getArgAsFloat(i));
-            }
-            else if(m.getArgType(i) == OFXOSC_TYPE_STRING){
-                msg_string += m.getArgAsString(i);
-            }
-            else{
-                msg_string += "unknown";
-            }
-        }
-        // add to the list of strings to display
-        msg_strings[current_msg_string] = msg_string;
-        timers[current_msg_string] = ofGetElapsedTimef() + 5.0f;
-        current_msg_string = (current_msg_string + 1) % NUM_MSG_STRINGS;
-        // clear the next line
-        msg_strings[current_msg_string] = "";
-
-    }
-
-	// check for waiting messages
-	while(receiver.hasWaitingMessages()){
-		ofxOscMessage m;
-		receiver.getNextMessage(m);
-        
-		// check for mouse moved message
-		if(m.getAddress() == "/oscShare/push"){
-			// both the arguments are int32's
+        // check for mouse moved message
+        if(m.getAddress() == "/oscShare/push"){
             string  ip   = m.getArgAsString(0);
-			int     port = m.getArgAsInt32(1);
             
             //check already connected
             bool already = false;
             for(auto s : laterSender){
-                bool sameIp   = false;
-                bool samePort = false;
-                if(ip   == s.getIp())   sameIp   = true;
-                if(port == s.getPort()) samePort = true;
-                
-                if(sameIp && samePort) already = true;
+                if(ip   == s.getIp())   already   = true;
             }
-            bool isMyself = (ip == localhost) && (port == PORT);
-            if(!already && !isMyself){
+            if(!already){
                 if(connected >= laterSender.size()) return;
                 laterSender[connected].setIp(ip);
-                laterSender[connected].setPort(port);
-                laterSender[connected].setup();
+                laterSender[connected].setupAll();
                 connected++;
             }
         }else if(m.getAddress() == "/oscShare/pull"){
@@ -100,56 +72,57 @@ void ofApp::update(){
         }else{
             //senderMe.sendMessage(m);
             for(int i=0; i<connected; i++)
-                laterSender[i].sendMessage(m);
-            
+                laterSender[i].sendMessageAll(m);
         }
-	}
+    }
+    for(int i=0; i<receiver.size(); i++){
+        while(receiver[i].hasWaitingMessages()){
+            ofxOscMessage m;
+            receiver[i].getNextMessage(m);
+            loggers[i].setLog(m);
+        }
+    }
     
 }
 void ofApp::sendMyData(){
     ofxOscMessage m;
     m.setAddress("/oscShare/push");
     m.addStringArg(localhost);
-    m.addIntArg(3001);
-    sender.sendMessage(m);
+    senderBroad.sendMessage(m);
     
 }
 void ofApp::sendRequest(){
     ofxOscMessage m;
     m.setAddress("/oscShare/pull");
     m.addIntArg(0);
-    sender.sendMessage(m);
+    senderBroad.sendMessage(m);
 }
 //--------------------------------------------------------------
 void ofApp::draw(){
     int height = 0;
     ofDrawBitmapStringHighlight(ofToString(ofGetFrameRate()) , 20,height += 20);
-    ofDrawBitmapString(localhost,   20, height += 20);
-    ofDrawBitmapString(broadcast,   20, height += 20);
+    ofDrawBitmapStringHighlight(localhost,   20, height += 20);
+    ofDrawBitmapStringHighlight(broadcast,   20, height += 20);
     ofDrawBitmapStringHighlight("press SPACE to connect other oscShare", 20, height += 20);
     ofDrawBitmapStringHighlight("press t     to send test message", 20, height += 20);
+    
+    
+    
     height += 40;
     for(int i=0; i<laterSender.size(); i++) {
         string text;
         text += laterSender[i].getIp();
         text += " ";
-        text += ofToString(laterSender[i].getPort());
+        vector<int> ports = laterSender[i].getPorts();
+        for(auto port : laterSender[i].getPorts()){
+            text += ", ";
+            text += ofToString(port);
+        }
         ofDrawBitmapStringHighlight(text, 20, height + i*20);
     }
     
-    
-	for(int i = 0; i < NUM_MSG_STRINGS; i++){
-		if(timers[i] < ofGetElapsedTimef())
-			msg_strings[i] = "";
-		ofDrawBitmapStringHighlight(msg_strings[i], 350, 40 + 15 * i);
-	}
-    
-    int y = 200;
-    ofDrawBitmapStringHighlight(ofToString(lists.size()),100,30);
-    ofLog() << lists.size() << lists[0];
-    for(auto i : lists){
-        ofDrawBitmapStringHighlight(i, 60,y+=20);
-    }
+    ofDrawBitmapStringHighlight(ofToString(logNum), 400, 20);
+    loggers[logNum].drawLog(400, 40);
 }
 
 //--------------------------------------------------------------
@@ -162,60 +135,71 @@ void ofApp::keyPressed(int key){
         sendRequest();
     }
     if(key == 't'){
-        ofxOscMessage m ;
-        m.setAddress("/test");
-        m.addStringArg("hello from " + localhost+ "!");
-        senderTest.sendMessage(m);
+        for(int i=0; i<testSender.size(); i++) {
+            ofxOscMessage m ;
+            m.setAddress("/test");
+            m.addStringArg("hello from " + localhost+ "! "  + ofToString(i));
+            testSender[i].sendMessage(m);
+            m.clear();
+        }
     }
-
+    if(key == OF_KEY_LEFT) {
+        if(logNum == 0) return;
+        logNum--;
+    }
+    if(key == OF_KEY_RIGHT) {
+        if(logNum == portList.size()-1) return;
+        logNum++;
+    }
+    
 }
 
 //--------------------------------------------------------------
 void ofApp::keyReleased(int key){
-
+    
 }
 
 //--------------------------------------------------------------
 void ofApp::mouseMoved(int x, int y ){
-
+    
 }
 
 //--------------------------------------------------------------
 void ofApp::mouseDragged(int x, int y, int button){
-
+    
 }
 
 //--------------------------------------------------------------
 void ofApp::mousePressed(int x, int y, int button){
-
+    
 }
 
 //--------------------------------------------------------------
 void ofApp::mouseReleased(int x, int y, int button){
-
+    
 }
 
 //--------------------------------------------------------------
 void ofApp::mouseEntered(int x, int y){
-
+    
 }
 
 //--------------------------------------------------------------
 void ofApp::mouseExited(int x, int y){
-
+    
 }
 
 //--------------------------------------------------------------
 void ofApp::windowResized(int w, int h){
-
+    
 }
 
 //--------------------------------------------------------------
 void ofApp::gotMessage(ofMessage msg){
-
+    
 }
 
 //--------------------------------------------------------------
 void ofApp::dragEvent(ofDragInfo dragInfo){ 
-
+    
 }

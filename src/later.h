@@ -4,12 +4,10 @@
 
 class LaterSender {
 public:
-    ofxOscSender sender;
-    string ip = "";
-    int port = 0;
-    bool started    = false;
-    bool firstTime  = true;
-
+    vector<ofxOscSender> sender;
+    string  ip      = "";
+    vector<int> ports;
+    
     LaterSender(){}
     
     //setter
@@ -19,30 +17,33 @@ public:
         ip = _ip;
         ipSet = true;
     }
-    bool portSet = false;
-    void setPort(int _port){
-        if(portSet) return;
-        port = _port;
-        portSet = true;
+    void addPorts(vector<int> _ports){
+        ports.resize(_ports.size());
+        for(int i=0; i<ports.size(); i++)
+            ports[i] = _ports[i];
     }
-    
+    void addPort(int port){
+        //if(isSetup) return;
+        ports.push_back(port);
+    }
+    bool isSetup = false;
+    void setupAll(){
+        sender.resize(ports.size());
+        for(int i=0; i<sender.size(); i++) {
+            sender[i].setup(ip, ports[i]);
+        }
+        isSetup = true;
+    }
     //getter
     string getIp(){
         return ip;
     }
-    int getPort(){
-        return port;
+    vector<int> getPorts(){
+        return ports;
     }
     
-    bool setuped = false;
-    bool setup(){
-        if(!ipSet or !portSet or setuped) return false;
-        sender.setup(ip, port);
-        setuped = true;
-        return true;
-    };
-    
-    void sendMessage(ofxOscMessage m){
-        sender.sendMessage(m);
+    void sendMessageAll(ofxOscMessage m){
+        for(auto s : sender)
+            s.sendMessage(m);
     }
 };
