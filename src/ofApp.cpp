@@ -105,6 +105,7 @@ void ofApp::sendMyData(){
     m.setAddress("/oscShare/push");
     m.addStringArg(localhost);
     senderBroad.sendMessage(m);
+    senderFromHub[0].sendMessage(m);
     
 }
 void ofApp::sendRequest(){
@@ -147,7 +148,6 @@ void ofApp::keyPressed(int key){
         sendMyData();
     }
     if(key == ' '){
-        sendMyData();
         sendRequest();
     }
     if(key == 't'){
