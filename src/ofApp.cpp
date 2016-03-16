@@ -9,15 +9,18 @@ vector<int> portList = {3000, 3100, 3200, 3300, 3400};
 void ofApp::setup(){
     ofSetFrameRate(60);
     
-    receiver.resize(portList.size());
-    //fsender.resize(portList.size());
-    testSender.resize(portList.size());
-    loggers.resize(portList.size());
+    receiver.resize(      portList.size());
+    receiverHub.resize(   portList.size());
+    testSender.resize(    portList.size());
+    senderFromHub.resize( portList.size());
+    loggers.resize(       portList.size());
     
     for(int i=0; i<portList.size(); i++){
         receiver[i].setup(portList[i]);
+        receiverHub[i].setup(portList[i]+1);
         //sender[i].setup("localhost", portList[i]+1);
         testSender[i].setup("localhost", portList[i]);
+        senderFromHub[i].setup("localhost", portList[i]+10);
     }
     
     //get broadcast
@@ -85,6 +88,17 @@ void ofApp::update(){
                 laterSender[j].getSender(i).sendMessage(m);
         }
     }
+    
+    //hub
+    for(int i=0; i<receiverHub.size(); i++){
+        while(receiverHub[i].hasWaitingMessages()){
+            ofxOscMessage m;
+            receiverHub[i].getNextMessage(m);
+            loggers[i].setLog(m);
+            senderFromHub[i].sendMessage(m);
+        }
+    }
+    
     
 }
 void ofApp::sendMyData(){

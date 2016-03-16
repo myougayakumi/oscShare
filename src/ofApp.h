@@ -24,8 +24,8 @@ class ofApp : public ofBaseApp{
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
     
-    vector<ofxOscReceiver>  receiver;
-    vector<ofxOscSender>    sender, testSender;
+    vector<ofxOscReceiver>  receiver, receiverHub;
+    vector<ofxOscSender>    sender, testSender, senderFromHub;
     ofxOscSender senderBroad;
     
     
