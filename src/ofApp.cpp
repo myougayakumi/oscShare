@@ -81,8 +81,8 @@ void ofApp::update(){
             ofxOscMessage m;
             receiver[i].getNextMessage(m);
             loggers[i].setLog(m);
-            for(int i=0; i<connected; i++)
-                laterSender[i].sendMessageAll(m);
+            for(int j=0; j<connected; j++)
+                laterSender[j].getSender(i).sendMessage(m);
         }
     }
     

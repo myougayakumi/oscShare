@@ -41,7 +41,9 @@ public:
     vector<int> getPorts(){
         return ports;
     }
-    
+    ofxOscSender getSender(int i){
+        return sender[i];
+    }
     void sendMessageAll(ofxOscMessage m){
         for(auto s : sender)
             s.sendMessage(m);
