@@ -9,13 +9,13 @@
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "src/ofApp.cpp"
-            timestampString = "479793260.366089"
+            filePath = "src/LocalAddressGrabber.h"
+            timestampString = "479796404.567196"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "85"
-            endingLineNumber = "85"
-            landmarkName = "ofApp::update()"
+            startingLineNumber = "103"
+            endingLineNumber = "103"
+            landmarkName = "getIpAddress(const string&amp; interface)"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
