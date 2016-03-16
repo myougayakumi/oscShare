@@ -53,7 +53,7 @@ void ofApp::update(){
     while(receiver[0].hasWaitingMessages()){
         ofxOscMessage m;
         receiver[0].getNextMessage(m);
-        loggers[0].setLog(m);
+        //loggers[0].setLog(m);
         
         // check for mouse moved message
         if(m.getAddress() == "/oscShare/push"){
@@ -74,7 +74,7 @@ void ofApp::update(){
             sendMyData();
         }else{
             //senderMe.sendMessage(m);
-            loggers[0].setLog(m);
+            //loggers[0].setLog(m);
             for(int i=0; i<connected; i++)
                 laterSender[i].sendMessageAll(m);
         }
