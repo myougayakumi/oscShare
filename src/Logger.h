@@ -5,7 +5,7 @@
 
 class Logger {
     //view
-    int current_msg_string;
+    int current_msg_string = 0;
     string msg_strings[NUM_MSG_STRINGS];
     float timers[NUM_MSG_STRINGS];
 public:

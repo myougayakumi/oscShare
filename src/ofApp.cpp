@@ -10,7 +10,7 @@ void ofApp::setup(){
     ofSetFrameRate(60);
     
     receiver.resize(portList.size());
-    //sender.resize(portList.size());
+    //fsender.resize(portList.size());
     testSender.resize(portList.size());
     loggers.resize(portList.size());
     
@@ -71,6 +71,7 @@ void ofApp::update(){
             sendMyData();
         }else{
             //senderMe.sendMessage(m);
+            loggers[0].setLog(m);
             for(int i=0; i<connected; i++)
                 laterSender[i].sendMessageAll(m);
         }
@@ -80,6 +81,8 @@ void ofApp::update(){
             ofxOscMessage m;
             receiver[i].getNextMessage(m);
             loggers[i].setLog(m);
+            for(int i=0; i<connected; i++)
+                laterSender[i].sendMessageAll(m);
         }
     }
     
@@ -136,11 +139,11 @@ void ofApp::keyPressed(int key){
     }
     if(key == 't'){
         for(int i=0; i<testSender.size(); i++) {
+
             ofxOscMessage m ;
             m.setAddress("/test");
             m.addStringArg("hello from " + localhost+ "! "  + ofToString(i));
             testSender[i].sendMessage(m);
-            m.clear();
         }
     }
     if(key == OF_KEY_LEFT) {
