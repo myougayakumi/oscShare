@@ -3,7 +3,7 @@
 
 string localhost = LocalAddressGrabber::getIpAddress("en0");
 
-vector<int> portList = {3000, 3100, 3200, 3300, 3400};
+vector<int> portList = {3000, 3100, 3200, 3300, 3400, 3500};
 //3000 using broadcast
 //--------------------------------------------------------------
 void ofApp::setup(){
@@ -83,7 +83,6 @@ void ofApp::update(){
         while(receiver[i].hasWaitingMessages()){
             ofxOscMessage m;
             receiver[i].getNextMessage(m);
-            loggers[i].setLog(m);
             for(int j=0; j<connected; j++)
                 laterSender[j].getSender(i).sendMessage(m);
         }
