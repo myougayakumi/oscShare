@@ -4,8 +4,8 @@
 #include "ofxOsc.h"
 #include "later.h"
 #include "WinLocalAddressGrabber.h"
+#include "Logger.h"
 
-#define NUM_MSG_STRINGS  20
 
 class ofApp : public ofBaseApp{
 
@@ -26,23 +26,22 @@ class ofApp : public ofBaseApp{
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
     
-    ofxOscReceiver      receiver, receiverHub;
-    ofxOscSender        sender;
-    ofxOscSender        senderMe, senderLocal;
-    ofxOscSender        senderTest;
-    vector<LaterSender> laterSender;
+    vector<ofxOscReceiver>  receiver, receiverHub;
+    vector<ofxOscSender>    sender, testSender, senderFromHub;
+    ofxOscSender senderBroad;
+    
     
     void sendMyData();
     void sendRequest();
+    
+    vector<LaterSender> laterSender;
     
     string broadcast;
     int connected = 0;
     vector<string> lists;
     
-    //view
-	int current_msg_string;
-	string msg_strings[NUM_MSG_STRINGS];
-	float timers[NUM_MSG_STRINGS];
+    vector<Logger> loggers;
+    int logNum=0;
 
 	WinLocalAddressGrabber wlag;
 };
