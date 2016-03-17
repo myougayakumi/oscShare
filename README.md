@@ -14,3 +14,6 @@ space押すと他PCからipアドレスとport番号要求する
 
 ##他
 だるいので3000,3001でやってる。PCは10台までにしといた。必要があれば起動後に番号とか選べるようにするかも
+
+# macのみ
+windows版→[https://github.com/myougayakumi/oscShare](https://github.com/myougayakumi/oscShare)

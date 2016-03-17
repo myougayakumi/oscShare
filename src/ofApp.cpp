@@ -10,7 +10,7 @@ string localhost = wlag.getIpAddress();
 
 //--------------------------------------------------------------
 void ofApp::setup(){
-    ofSetFrameRate(30);
+    ofSetFrameRate(60);
     
     receiver.setup(PORT);
     receiverHub.setup(PORT + 1);
