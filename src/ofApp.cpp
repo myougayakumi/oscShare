@@ -122,23 +122,26 @@ void ofApp::draw(){
     ofDrawBitmapStringHighlight(broadcast,   20, height += 20);
     ofDrawBitmapStringHighlight("press SPACE to connect other oscShare", 20, height += 20);
     ofDrawBitmapStringHighlight("press t     to send test message", 20, height += 20);
+    ofDrawBitmapStringHighlight("you can send -> [localhost **00] -> spread[eachhost **01] -> each[localhost **10]", 20, height += 20);
+    ofDrawBitmapStringHighlight("you can receive at **10", 20, height += 20);
     
     
     
-    height += 40;
+    height += 30;
+    string portStr;
+        for(auto port : portList){
+            portStr += ", ";
+            portStr += ofToString(port);
+        }
+    ofDrawBitmapStringHighlight(portStr,20, height+=10);
+    
     for(int i=0; i<laterSender.size(); i++) {
         string text;
         text += laterSender[i].getIp();
-        text += " ";
-        vector<int> ports = laterSender[i].getPorts();
-        for(auto port : laterSender[i].getPorts()){
-            text += ", ";
-            text += ofToString(port);
-        }
-        ofDrawBitmapStringHighlight(text, 20, height + i*20);
+        ofDrawBitmapStringHighlight(text, 30, height += 21);
     }
     
-    ofDrawBitmapStringHighlight(ofToString(logNum), 400, 20);
+    ofDrawBitmapStringHighlight(ofToString(portList[logNum]+1), 400, 20);
     loggers[logNum].drawLog(400, 40);
 }
 
